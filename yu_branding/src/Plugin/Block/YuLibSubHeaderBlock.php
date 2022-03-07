@@ -21,8 +21,8 @@ class YuLibSubHeaderBlock extends BlockBase {
   public function build() {
     $build = [];
 
-    $yu_sub_header = '<div class="navbar navbar-expand-lg navbar-dark bg-primary py-1">
-        <div class="container">
+    $yu_sub_header = '<div class="container-fluid site-title">
+        <div class="row">
           <a class="navbar-brand" href="https://digital.library.yorku.ca" rel="home">York University Digital Library</a>
         </div>
       </div>';
