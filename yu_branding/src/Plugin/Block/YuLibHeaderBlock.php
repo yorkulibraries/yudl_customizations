@@ -28,7 +28,7 @@ class YuLibHeaderBlock extends BlockBase {
           </div>
           <div class="d-flex align-items-center">
             <div id="yul-wpml-dropdown" class="px-2">
-              <a class="btn btn-outline-dark rounded-0" href="https://www.library.yorku.ca/web/frost/?lang=fr" class="">French (Français)</a></li>
+              <a class="btn btn-outline-dark rounded-0" href="/fr" class="">French (Français)</a></li>
             </div>
             <div id="popular-links" class="dropdown pt-2 pt-md-0">
               <button class="btn btn-outline-dark dropdown-toggle rounded-0 w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Popular Links  </button>
