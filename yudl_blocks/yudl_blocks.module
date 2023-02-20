@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Contains yudl_blocks.module.
+ *
+ * This module adds YUDL specific blocks.
+ */
+
+use Drupal\search_api\IndexInterface;
+use Drupal\search_api\Query\QueryInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function yudl_blocks_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.yudl_blocks':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Custom blocks for YUDL.') . '</p>';
+      return $output;
+    default:
+  }
+}

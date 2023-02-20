@@ -1,0 +1,8 @@
+name: 'YUDL Custom blocks'
+description: 'A module that provides YUDL specific blocks.'
+type: module
+dependencies:
+  - islandora:islandora
+  - drupal:search_api_solr
+package: YUDL
+core_version_requirement: ^9 || ^10
