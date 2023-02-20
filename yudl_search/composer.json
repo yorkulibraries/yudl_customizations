@@ -1,0 +1,10 @@
+{
+    "name": "yorkulibraries/",
+    "type": "drupal-module",
+    "description": "YUDL Search Customizations",
+    "homepage": "https://github.com/yorkulibraries/yudl_customizations",
+    "license": "GPL-2.0+",
+    "require": {
+        "drupal/search_api_solr": "^4.2"
+    }
+}
