@@ -1,6 +1,0 @@
-home.example:
-  path: '/home'
-  defaults:
-    _controller: '\Drupal\home\Controller\HomeController::build'
-  requirements:
-    _permission: 'access content'
