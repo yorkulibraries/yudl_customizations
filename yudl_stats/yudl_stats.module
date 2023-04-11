@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains yudl_stats.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function yudl_stats_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the yudl_stats module.
+    case 'help.page.yudl_stats':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Yudl stats and other') . '</p>';
+      return $output;
+
+    default:
+  }
+}

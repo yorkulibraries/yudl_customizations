@@ -1,0 +1,6 @@
+name: 'yudl_stats'
+type: module
+description: 'Yudl stats and other'
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: 'Custom'
