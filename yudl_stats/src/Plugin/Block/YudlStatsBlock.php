@@ -90,18 +90,28 @@ class YudlStatsBlock extends BlockBase implements ContainerFactoryPluginInterfac
    * {@inheritdoc}
    */
   public function build() {
+    $items = $max_timestamp = 0;
+    $islandora_models = $stat_box_row1 = $stat_box_row2 = [];
     $collection_node = $this->currentRouteMatch->getParameter('node');
-    $totalLanguages = getLanguagesPerNode($collection_node, $this->entityTypeManager);
-    $lastChangeDate = getLatestChangeDate($this->entityTypeManager);
-    $itemsOnCollection = 0;
-    $stat_box_row1 = $stat_box_row2 = [];
     $collection_created = $collection_node->get('revision_timestamp')->getString();
-    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($itemsOnCollection) . "</strong><br>items");
-    $stat_box_row1[] = $this->makeBox("<strong>" . "0". "</strong><br>resource types");
-    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($totalLanguages) . "</strong><br>unique languages");
-    $stat_box_row2[] = $this->makeBox("<strong>" . (($collection_created) ? date('Y', $collection_created) : 'unknown') .
+
+    $total_languages = get_languages_per_node($collection_node, $this->entityTypeManager);
+    $last_change_date = get_latest_changed_node($this->entityTypeManager);
+    $children = asu_collection_extras_solr_get_collection_children($collection_node);
+
+    if (array_key_exists('item_count', $children)) {
+      $items = $children['item_count'];
+    }
+    if (array_key_exists('model_count', $children)) {
+      $islandora_models = $children['model_count'];
+    }
+
+    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($items) . "</strong><br>items");
+    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($islandora_models). "</strong><br>resource types");
+    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($total_languages) . "</strong><br>unique languages");
+    $stat_box_row2[] = $this->makeBox("<strong>" . (($collection_created) ? format_time($collection_created) : 'unknown') .
       "</strong><br>collection created");
-    $stat_box_row2[] = $this->makeBox("<strong>" . (($lastChangeDate) ? $lastChangeDate : 'unknown') .
+    $stat_box_row2[] = $this->makeBox("<strong>" . (($last_change_date) ? $last_change_date : 'unknown') .
       "</strong><br>most recent item added</div>");
     return [
       '#markup' =>

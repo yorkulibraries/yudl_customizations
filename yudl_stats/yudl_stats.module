@@ -1,4 +1,6 @@
 <?php
+use Drupal\search_api\Entity\Index;
+
 /**
  * @file
  * Contains yudl_stats.module.
@@ -8,10 +10,10 @@ function format_time($time){
   $t = new DateTime();
   $t->setTimestamp( $time );
   $t->setTimeZone(new DateTimeZone("America/New_York"));
-  return $t->format(DateTime::RFC850);
+  return $t->format("F j, Y");
 }
 
-function getLatestChangeDate($entityTypeManager){
+function get_latest_changed_node($entityTypeManager){
   $query = $entityTypeManager->getStorage('node')->getQuery();
   $query->condition('status', 1);
   $query->sort('changed', 'DESC');
@@ -22,7 +24,7 @@ function getLatestChangeDate($entityTypeManager){
   return format_time($last_modified_date);
 }
 
-function getLanguagesPerNode($collection_node, $entityTypeManager){
+function get_languages_per_node($collection_node, $entityTypeManager){
   $collection_node_id = (is_object($collection_node) ? $collection_node->id() : $collection_node);
   $node_storage = $entityTypeManager->getStorage('node');
   $node = $node_storage->load($collection_node_id);
@@ -30,3 +32,41 @@ function getLanguagesPerNode($collection_node, $entityTypeManager){
   return count($translations);
 }
 
+// Taken partially from https://github.com/asulibraries/islandora-repo/blob/621e4e3fdc180450ae11ccfc41bd472b587ee90b/web/modules/custom/asu_collection_extras/asu_collection_extras.module
+function asu_collection_extras_solr_get_collection_children($collection_node) {
+  $collection_node_id = (is_object($collection_node) ? $collection_node->id() : $collection_node);
+  $result_set = [];
+  if (!is_null($collection_node_id)) {
+    $index = Index::load('default_solr_index');
+    $server = $index->getServerInstance();
+    $backend = $server->getBackend();
+    $solrConnector = $backend->getSolrConnector();
+    $solariumQuery = $solrConnector->getSelectQuery();
+    $solariumQuery->addParam('q', '(itm_field_ancestors:' . $collection_node_id .
+      ' OR itm_field_combined_member_of:' . $collection_node_id . ')');
+    $solariumQuery->setFields(['its_nid', 'ds_changed']);
+    $solariumQuery->addSort('ds_changed', 'desc');
+    $facetSet = $solariumQuery->getFacetSet();
+    $facetSet->createFacetField('model')->setField('itm_field_model');
+    $count = 0;
+    $models = [];
+    $solariumQuery->setStart($count)->setRows(1);
+    $nids = $solrConnector->execute($solariumQuery);
+    $count = $nids->getNumFound();
+    if ($count) {
+      $model_facet = $nids->getFacetSet()->getFacet('model');
+      foreach ($model_facet as $value => $mod_count) {
+        if (!in_array($value, $models)) {
+          $models[] = $value;
+        }
+      }
+    }
+    $result_set['item_count'] = $count;
+    $model_count = count($models);
+    $result_set['model_count'] = $model_count;
+  }
+  else {
+    $result_set['recent_change'] = NULL;
+  }
+  return $result_set;
+}
