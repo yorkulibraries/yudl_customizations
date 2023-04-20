@@ -9,6 +9,8 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
+use Drupal\Core\Cache\Cache;
+
 
  /**
  * Provides a 'YudlStatsBlock' block.
@@ -58,7 +60,6 @@ class YudlStatsBlock extends BlockBase implements ContainerFactoryPluginInterfac
       $container->get('entity_type.manager'),
       $container->get('entity.repository'),
       $container->get('current_route_match')
-
     );
   }
 
@@ -90,15 +91,17 @@ class YudlStatsBlock extends BlockBase implements ContainerFactoryPluginInterfac
    */
   public function build() {
     $collection_node = $this->currentRouteMatch->getParameter('node');
-    $max_timestamp = 0;
+    $totalLanguages = getLanguagesPerNode($collection_node, $this->entityTypeManager);
+    $lastChangeDate = getLatestChangeDate($this->entityTypeManager);
+    $itemsOnCollection = 0;
     $stat_box_row1 = $stat_box_row2 = [];
     $collection_created = $collection_node->get('revision_timestamp')->getString();
-    $stat_box_row1[] = $this->makeBox("<strong>" . number_format(0) . "</strong><br>items");
+    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($itemsOnCollection) . "</strong><br>items");
     $stat_box_row1[] = $this->makeBox("<strong>" . "0". "</strong><br>resource types");
-    $stat_box_row1[] = $this->makeBox("<strong>" . number_format(0) . "</strong><br>unique languages");
+    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($totalLanguages) . "</strong><br>unique languages");
     $stat_box_row2[] = $this->makeBox("<strong>" . (($collection_created) ? date('Y', $collection_created) : 'unknown') .
       "</strong><br>collection created");
-    $stat_box_row2[] = $this->makeBox("<strong>" . (($max_timestamp) ? date('M d, Y', $max_timestamp) : 'unknown') .
+    $stat_box_row2[] = $this->makeBox("<strong>" . (($lastChangeDate) ? $lastChangeDate : 'unknown') .
       "</strong><br>most recent item added</div>");
     return [
       '#markup' =>
@@ -112,6 +115,9 @@ class YudlStatsBlock extends BlockBase implements ContainerFactoryPluginInterfac
       implode('', $stat_box_row2) .
       '</div>' :
       "",
+      '#cache' => [
+        'max-age' => 0,
+      ],
     ];    
   }
 }

@@ -1,24 +1,32 @@
 <?php
-
 /**
  * @file
  * Contains yudl_stats.module.
  */
 
-use Drupal\Core\Routing\RouteMatchInterface;
-
-/**
- * Implements hook_help().
- */
-function yudl_stats_help($route_name, RouteMatchInterface $route_match) {
-  switch ($route_name) {
-    // Main module help for the yudl_stats module.
-    case 'help.page.yudl_stats':
-      $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('Yudl stats and other') . '</p>';
-      return $output;
-
-    default:
-  }
+function format_time($time){
+  $t = new DateTime();
+  $t->setTimestamp( $time );
+  $t->setTimeZone(new DateTimeZone("America/New_York"));
+  return $t->format(DateTime::RFC850);
 }
+
+function getLatestChangeDate($entityTypeManager){
+  $query = $entityTypeManager->getStorage('node')->getQuery();
+  $query->condition('status', 1);
+  $query->sort('changed', 'DESC');
+  $query->range(0, 1);
+  $result = $query->execute();
+  $node = $result ? $entityTypeManager->getStorage('node')->load(reset($result)) : NULL;
+  $last_modified_date = $node ? $node->getChangedTime() : NULL;
+  return format_time($last_modified_date);
+}
+
+function getLanguagesPerNode($collection_node, $entityTypeManager){
+  $collection_node_id = (is_object($collection_node) ? $collection_node->id() : $collection_node);
+  $node_storage = $entityTypeManager->getStorage('node');
+  $node = $node_storage->load($collection_node_id);
+  $translations = $node->getTranslationLanguages();
+  return count($translations);
+}
+
