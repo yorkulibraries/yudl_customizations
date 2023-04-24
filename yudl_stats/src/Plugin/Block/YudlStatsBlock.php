@@ -9,8 +9,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
-use Drupal\Core\Cache\Cache;
-
 
  /**
  * Provides a 'YudlStatsBlock' block.
@@ -74,12 +72,9 @@ class YudlStatsBlock extends BlockBase implements ContainerFactoryPluginInterfac
    * @return string
    *   Markup of the box for use in the template
    */
-  private function makeBox($string, Url $link_url = NULL) {
-    if ($link_url) {
-      // Drupal's Link class is escaping the HTML, so this must be done
-      // manually.
-      return '<div class="stats_box col-4 stats_pointer_box"><a href="' . $link_url->toString() . '" title="Explore items">' .
-        '<div class="stats_border_box">' . $string . '</div></a></div>';
+  private function makeBox($string, bool $is_large_content = false) {
+    if ($is_large_content) {
+      return '<div class="stats_box col-6"><div class="stats_border_box">' . $string . '</div></div>';
     }
     else {
       return '<div class="stats_box col-4"><div class="stats_border_box">' . $string . '</div></div>';
@@ -90,8 +85,8 @@ class YudlStatsBlock extends BlockBase implements ContainerFactoryPluginInterfac
    * {@inheritdoc}
    */
   public function build() {
-    $items = $max_timestamp = 0;
-    $islandora_models = $stat_box_row1 = $stat_box_row2 = [];
+    $islandora_models = $items = 0;
+    $stat_box_row1 = $stat_box_row2 = [];
     $collection_node = $this->currentRouteMatch->getParameter('node');
     $collection_created = $collection_node->get('revision_timestamp')->getString();
 
@@ -110,9 +105,9 @@ class YudlStatsBlock extends BlockBase implements ContainerFactoryPluginInterfac
     $stat_box_row1[] = $this->makeBox("<strong>" . number_format($islandora_models). "</strong><br>resource types");
     $stat_box_row1[] = $this->makeBox("<strong>" . number_format($total_languages) . "</strong><br>unique languages");
     $stat_box_row2[] = $this->makeBox("<strong>" . (($collection_created) ? format_time($collection_created) : 'unknown') .
-      "</strong><br>collection created");
+      "</strong><br>collection created", true);
     $stat_box_row2[] = $this->makeBox("<strong>" . (($last_change_date) ? $last_change_date : 'unknown') .
-      "</strong><br>most recent item added</div>");
+      "</strong><br>most recent item added</div>", true);
     return [
       '#markup' =>
       (count($stat_box_row1) > 0) ?
