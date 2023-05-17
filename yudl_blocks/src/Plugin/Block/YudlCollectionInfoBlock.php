@@ -103,10 +103,10 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
    */
   private function makeBox($string, bool $is_large_content = FALSE) {
     if ($is_large_content) {
-      return '<div class="stats_box col-6"><div class="stats_border_box">' . $string . '</div></div>';
+      return '<div class="stats_box col-md-6 col-sm-12 g-2"><div class="card card-stats mb-4 mb-xl-0"><div class="card-body">' . $string . '</div></div></div>';
     }
     else {
-      return '<div class="stats_box col-4"><div class="stats_border_box">' . $string . '</div></div>';
+      return '<div class="stats_box"><div class="card card-stats mb-4 mb-xl-0"><div class="card-body">' . $string . '</div></div></div>';
     }
   }
 
@@ -130,18 +130,37 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
       $islandora_models = $children['model_count'];
     }
 
-    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($items) . "</strong><br>items");
-    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($islandora_models) . "</strong><br>resource types");
-    $stat_box_row1[] = $this->makeBox("<strong>" . number_format($total_languages) . "</strong><br>unique languages");
-    $stat_box_row2[] = $this->makeBox("<strong>" . (($collection_created) ? format_time($collection_created) : 'unknown') .
-      "</strong><br>collection created", TRUE);
-    $stat_box_row2[] = $this->makeBox("<strong>" . (($last_change_date) ? $last_change_date : 'unknown') .
-      "</strong><br>most recent item added</div>", TRUE);
+    $stat_box_row1[] = $this->makeBox('
+                        <div class="row">
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Items</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($items) . '</span></div>'.
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fa-solid fa-layer-group fs-4"></i></div></div>' .
+                        '</div>');
+    $stat_box_row1[] = $this->makeBox('
+                        <div class="row">
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Resource Types</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($islandora_models) . '</span></div>'.
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-shapes fs-4"></i></div></div>' .
+                          '</div>');
+    $stat_box_row1[] = $this->makeBox('
+                        <div class="row">
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Unique Languages</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($total_languages) . '</span></div>'.
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fa-solid fa-language fs-4"></i></div></div>' .
+                          '</div>');
+    $stat_box_row1[] = $this->makeBox('
+                        <div class="row">
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Collection Created</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($collection_created) ? format_time($collection_created) : 'unknown') . '</span></div>'.
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-crown fs-4"></i></div></div>' .
+                          '</div>');
+    $stat_box_row1[] = $this->makeBox('
+                        <div class="row">
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Most Recent Item Added</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($last_change_date) ? $last_change_date : 'unknown') . '</span></div>'.
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-clock fs-4"></i></div></div>' .
+                        '</div>');
+
     return [
       '#markup' =>
       (count($stat_box_row1) > 0) ?
         // ROW 1.
-      '<div class="container"><div class="row">' .
+      '<div class="stats-container"><div class="row row-cols-1 row-cols-md-3 py-2 g-md-3 mb-2">' .
       implode('', $stat_box_row1) .
       '</div>' .
         // ROW 2.
