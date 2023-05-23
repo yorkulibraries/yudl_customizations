@@ -34,7 +34,7 @@ function yudl_blocks_help($route_name, RouteMatchInterface $route_match) {
  * @return string
  *   Timestamp formatted as F j, Y.
  */
-function format_time($time) {
+function yudl_blocks_format_time($time) {
   $t = new DateTime();
   $t->setTimestamp($time);
   $t->setTimeZone(new DateTimeZone("America/Toronto"));
@@ -50,15 +50,15 @@ function format_time($time) {
  * @return time
  *   Return last modified date.
  */
-function get_latest_changed_node($entityTypeManager) {
+function yudl_blocks_get_latest_changed_node($entityTypeManager) {
   $query = $entityTypeManager->getStorage('node')->getQuery();
   $query->condition('status', 1);
-  $query->sort('changed', 'DESC');
+  $query->sort('created', 'DESC');
   $query->range(0, 1);
   $result = $query->execute();
   $node = $result ? $entityTypeManager->getStorage('node')->load(reset($result)) : NULL;
-  $last_modified_date = $node ? $node->getChangedTime() : NULL;
-  return format_time($last_modified_date);
+  $last_modified_date = $node ? $node->getCreatedTime() : NULL;
+  return yudl_blocks_format_time($last_modified_date);
 }
 
 /**
@@ -72,7 +72,7 @@ function get_latest_changed_node($entityTypeManager) {
  * @return int
  *   Return number of unique languages.
  */
-function get_languages_per_node($collection_node, $entityTypeManager) {
+function yudl_blocks_get_languages_per_node($collection_node, $entityTypeManager) {
   $collection_node_id = (is_object($collection_node) ? $collection_node->id() : $collection_node);
   $node_storage = $entityTypeManager->getStorage('node');
   $node = $node_storage->load($collection_node_id);
