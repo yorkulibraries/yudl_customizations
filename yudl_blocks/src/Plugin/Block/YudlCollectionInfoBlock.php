@@ -117,19 +117,20 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
     $islandora_models = $items = 0;
     $stat_box_row1 = $stat_box_row2 = [];
     $collection_node = $this->currentRouteMatch->getParameter('node');
-    $collection_created = $collection_node->get('created')->getString();
-
     $total_languages = yudl_blocks_get_languages_per_node($collection_node, $this->entityTypeManager);
-    $last_change_date = yudl_blocks_get_latest_changed_node($this->entityTypeManager);
     $children = yudl_blocks_solr_get_collection_children($collection_node);
-
     if (array_key_exists('item_count', $children)) {
       $items = $children['item_count'];
     }
     if (array_key_exists('model_count', $children)) {
       $islandora_models = $children['model_count'];
     }
-
+    if (array_key_exists('recent_created', $children)) {
+      $collection_created = $children['recent_created'];
+    }
+    if (array_key_exists('recent_changed', $children)) {
+      $last_change_date = $children['recent_changed'];
+    }
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Items</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($items) . '</span></div>' .
@@ -152,7 +153,7 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
                           '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
-                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Most Recent Item Added</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($last_change_date) ? $last_change_date : 'unknown') . '</span></div>' .
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Most Recent Item Added</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($last_change_date) ? yudl_blocks_format_time($last_change_date) : 'unknown') . '</span></div>' .
                           '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-clock fs-4"></i></div></div>' .
                         '</div>');
 
