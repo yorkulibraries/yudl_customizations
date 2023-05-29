@@ -125,11 +125,11 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
     if (array_key_exists('model_count', $children)) {
       $islandora_models = $children['model_count'];
     }
-    if (array_key_exists('recent_created', $children)) {
-      $collection_created = $children['recent_created'];
+    if (array_key_exists('collection_created', $children)) {
+      $collection_created = $children['collection_created'];
     }
-    if (array_key_exists('recent_changed', $children)) {
-      $last_change_date = $children['recent_changed'];
+    if (array_key_exists('collection_recently_added', $children)) {
+      $last_change_date = $children['collection_recently_added'];
     }
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
