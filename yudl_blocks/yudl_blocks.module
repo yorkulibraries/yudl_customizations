@@ -105,7 +105,7 @@ function yudl_blocks_solr_get_collection_children($collection_node) {
     $solariumQuery = $solrConnector->getSelectQuery();
     $solariumQuery->addParam('q', '((id:*\:node\/' . $collection_node_id . '\:*) OR (itm_field_ancestors:' . $collection_node_id . '))');
     $solariumQuery->setFields(['ds_created']);
-    $solariumQuery->addSort('ds_created', 'desc');
+    $solariumQuery->addSort('ds_created', 'asc');
     $facetSet = $solariumQuery->getFacetSet();
     $facetSet->createFacetField('model')->setField('itm_field_model');
     $models = [];
@@ -113,8 +113,8 @@ function yudl_blocks_solr_get_collection_children($collection_node) {
     $nids = $solrConnector->execute($solariumQuery);
     $count = $nids->getNumFound();
     if ($count) {
-      $result_set['collection_created'] = $nids->getDocuments()[$count-1]->ds_created;
-      $result_set['collection_recently_added'] = $nids->getDocuments()[0]->ds_created;
+      $result_set['collection_created'] = $nids->getDocuments()[0]->ds_created;
+      $result_set['collection_recently_added'] = $nids->getDocuments()[$count-1]->ds_created;
       $model_facet = $nids->getFacetSet()->getFacet('model');
       foreach ($model_facet as $value => $mod_count) {
         if (!in_array($value, $models)) {
