@@ -62,25 +62,6 @@ function yudl_blocks_get_latest_changed_node($entityTypeManager) {
 }
 
 /**
- * Helper function to get the number of unique languages in a collection.
- *
- * @param int $collection_node
- *   The nid of a collection.
- * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
- *   The entity type manager service.
- *
- * @return int
- *   Return number of unique languages.
- */
-function yudl_blocks_get_languages_per_node($collection_node, $entityTypeManager) {
-  $collection_node_id = (is_object($collection_node) ? $collection_node->id() : $collection_node);
-  $node_storage = $entityTypeManager->getStorage('node');
-  $node = $node_storage->load($collection_node_id);
-  $translations = $node->getTranslationLanguages();
-  return count($translations);
-}
-
-/**
  * Helper function to get count of unique models in a collection.
  *
  * Adapted from from:
@@ -104,7 +85,7 @@ function yudl_blocks_solr_get_collection_children($collection_node) {
     $solrConnector = $backend->getSolrConnector();
     $solariumQuery = $solrConnector->getSelectQuery();
     $solariumQuery->addParam('q', '((id:*\:node\/' . $collection_node_id . '\:*) OR (itm_field_ancestors:' . $collection_node_id . '))');
-    $solariumQuery->setFields(['ds_created']);
+    $solariumQuery->setFields(['ds_created', 'sm_field_language']);
     $solariumQuery->addSort('ds_created', 'asc');
     $facetSet = $solariumQuery->getFacetSet();
     $facetSet->createFacetField('model')->setField('itm_field_model');
@@ -115,6 +96,13 @@ function yudl_blocks_solr_get_collection_children($collection_node) {
     if ($count) {
       $result_set['collection_created'] = $nids->getDocuments()[0]->ds_created;
       $result_set['collection_recently_added'] = $nids->getDocuments()[$count - 1]->ds_created;
+      $languages_avaliable = array_reduce($nids->getDocuments(), function ($carry, $item) {
+        if (isset($item->sm_field_language)) {
+          $carry = array_unique(array_merge($carry, array_values($item->sm_field_language)));
+        }
+        return $carry;
+      }, []);
+      $result_set['collection_languages'] = count($languages_avaliable);
       $model_facet = $nids->getFacetSet()->getFacet('model');
       foreach ($model_facet as $value => $mod_count) {
         if (!in_array($value, $models)) {
