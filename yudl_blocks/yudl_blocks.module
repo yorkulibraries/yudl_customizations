@@ -96,8 +96,8 @@ function yudl_blocks_solr_get_collection_children($collection_node) {
     if ($count) {
       $result_set['collection_created'] = $nids->getDocuments()[0]->ds_created;
       $result_set['collection_recently_added'] = $nids->getDocuments()[$count - 1]->ds_created;
-      $languages_avaliable = array_reduce($nids->getDocuments(), function ($carry = [], $item) {
-        if (!in_array($item->sm_field_language, $carry)) {
+      $languages_avaliable = array_reduce($nids->getDocuments(), function ($carry, $item) {
+        if (isset($item->sm_field_language)) {
           $carry = array_unique(array_merge($carry, array_values($item->sm_field_language)));
         }
         return $carry;
