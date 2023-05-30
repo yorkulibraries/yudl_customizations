@@ -114,10 +114,9 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
    * {@inheritdoc}
    */
   public function build() {
-    $islandora_models = $items = 0;
+    $total_languages = $islandora_models = $items = 0;
     $stat_box_row1 = $stat_box_row2 = [];
     $collection_node = $this->currentRouteMatch->getParameter('node');
-    $total_languages = yudl_blocks_get_languages_per_node($collection_node, $this->entityTypeManager);
     $children = yudl_blocks_solr_get_collection_children($collection_node);
     if (array_key_exists('item_count', $children)) {
       $items = $children['item_count'];
@@ -131,6 +130,10 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
     if (array_key_exists('collection_recently_added', $children)) {
       $last_change_date = $children['collection_recently_added'];
     }
+    if (array_key_exists('collection_languages', $children)) {
+      $total_languages = $children['collection_languages'];
+    }
+    
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Items</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($items) . '</span></div>' .
