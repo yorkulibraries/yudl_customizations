@@ -90,7 +90,7 @@ function yudl_blocks_solr_get_collection_children($collection_node) {
     $facetSet = $solariumQuery->getFacetSet();
     $facetSet->createFacetField('model')->setField('itm_field_model');
     $models = [];
-    $solariumQuery->setStart(0)->setRows(2000);
+    $solariumQuery->setStart(0)->setRows(20000);
     $nids = $solrConnector->execute($solariumQuery);
     $count = $nids->getNumFound();
     if ($count) {
