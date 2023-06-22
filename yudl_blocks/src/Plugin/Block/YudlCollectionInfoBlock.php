@@ -114,7 +114,7 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
    * {@inheritdoc}
    */
   public function build() {
-    $total_languages = $islandora_models = $items = 0;
+    $total_locations = $total_languages = $islandora_models = $items = 0;
     $stat_box_row1 = $stat_box_row2 = [];
     $collection_node = $this->currentRouteMatch->getParameter('node');
     $children = yudl_blocks_solr_get_collection_children($collection_node);
@@ -132,6 +132,10 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
     }
     if (array_key_exists('collection_languages', $children)) {
       $total_languages = $children['collection_languages'];
+    }
+
+    if (array_key_exists('collection_locations', $children)) {
+      $unique_locations = $children['collection_locations'];
     }
 
     $stat_box_row1[] = $this->makeBox('
@@ -158,6 +162,11 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Most Recent Item Added</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($last_change_date) ? yudl_blocks_format_time($last_change_date) : 'unknown') . '</span></div>' .
                           '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-clock fs-4"></i></div></div>' .
+                        '</div>');
+    $stat_box_row1[] = $this->makeBox('
+                        <div class="row">
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Unique Locations</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($unique_locations) . '</span></div>' .
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-globe fs-4"></i></div></div>' .
                         '</div>');
 
     return [
