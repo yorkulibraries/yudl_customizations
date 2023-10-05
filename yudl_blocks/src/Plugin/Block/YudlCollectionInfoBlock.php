@@ -140,32 +140,32 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
 
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
-                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Items</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($items - 1) . '</span></div>' .
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Items') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($items - 1) . '</span></div>' .
                           '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fa-solid fa-layer-group fs-4"></i></div></div>' .
                         '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
-                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Resource Types</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($islandora_models - 1) . '</span></div>' .
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Resource Types') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($islandora_models - 1) . '</span></div>' .
                           '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-shapes fs-4"></i></div></div>' .
                           '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
-                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Unique Languages</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($total_languages) . '</span></div>' .
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Unique Languages') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($total_languages) . '</span></div>' .
                           '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fa-solid fa-language fs-4"></i></div></div>' .
                           '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
-                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Collection Created</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($collection_created) ? yudl_blocks_format_time($collection_created) : 'unknown') . '</span></div>' .
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Collection Created') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($collection_created) ? yudl_blocks_format_time($collection_created) : 'unknown') . '</span></div>' .
                           '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-crown fs-4"></i></div></div>' .
                           '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
-                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Most Recent Item Added</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($last_change_date) ? yudl_blocks_format_time($last_change_date) : 'unknown') . '</span></div>' .
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Most Recent Item Added') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($last_change_date) ? yudl_blocks_format_time($last_change_date) : 'unknown') . '</span></div>' .
                           '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-clock fs-4"></i></div></div>' .
                         '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
-                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">Unique Locations</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($unique_locations) . '</span></div>' .
+                          <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Unique Locations') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($unique_locations) . '</span></div>' .
                           '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-globe fs-4"></i></div></div>' .
                         '</div>');
 
