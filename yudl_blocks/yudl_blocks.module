@@ -11,6 +11,16 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\search_api\Entity\Index;
 
 /**
+ * Implements config_schema_info_alter().
+ */
+function yudl_blocks_config_schema_info_alter(&$definitions) {
+  if (isset($definitions['reaction.plugin']['mapping']['blocks'])) {
+    $blocks =& $definitions['reaction.plugin']['mapping']['blocks'];
+    $blocks['sequence']['mapping']['label']['type'] = 'label';
+  }
+}
+
+/**
  * Implements hook_help().
  */
 function yudl_blocks_help($route_name, RouteMatchInterface $route_match) {
