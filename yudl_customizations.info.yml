@@ -1,5 +1,5 @@
 name: 'YUDL Customizations'
 type: module
 description: 'Customizations for YUDL.'
-core_version_requirement: ^9
+core_version_requirement: ^9.3 || ^10
 package: 'YUDL'
