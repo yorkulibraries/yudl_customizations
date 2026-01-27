@@ -1,0 +1,6 @@
+yudl_oembed.endpoint:
+  path: '/api/oembed'
+  defaults:
+    _controller: '\Drupal\yudl_oembed\Controller\OEmbedController::handle'
+  requirements:
+    _access: 'TRUE'

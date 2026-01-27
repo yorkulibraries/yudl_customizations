@@ -1,0 +1,35 @@
+<?php
+
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_page_attachments().
+ */
+function yudl_oembed_page_attachments(array &$attachments): void {
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() !== 'entity.node.canonical') {
+    return;
+  }
+
+  $node = $route_match->getParameter('node');
+  if (!$node instanceof NodeInterface || !$node->access('view')) {
+    return;
+  }
+
+  $content_url = $node->toUrl('canonical', ['absolute' => TRUE])->toString();
+  $oembed_url = Url::fromRoute('yudl_oembed.endpoint', [], [
+    'absolute' => TRUE,
+    'query' => ['url' => $content_url],
+  ])->toString();
+
+  $attachments['#attached']['html_head_link'][] = [
+    [
+      'rel' => 'alternate',
+      'type' => 'application/json+oembed',
+      'title' => $node->getTitle(),
+      'href' => $oembed_url,
+    ],
+    TRUE,
+  ];
+}

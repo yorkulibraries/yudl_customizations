@@ -1,0 +1,8 @@
+services:
+  yudl_oembed.builder:
+    class: Drupal\yudl_oembed\Service\OEmbedBuilder
+    arguments:
+      - '@config.factory'
+      - '@request_stack'
+      - '@entity_type.manager'
+      - '@file_url_generator'
