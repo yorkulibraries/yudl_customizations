@@ -1,0 +1,81 @@
+<?php
+
+/**
+ * @file
+ * Install and update hooks for yudl_oembed.
+ */
+
+/**
+ * Create the oEmbed view mode on install.
+ */
+function yudl_oembed_install(): void {
+  yudl_oembed_ensure_oembed_view_mode();
+  yudl_oembed_ensure_oembed_view_displays();
+}
+
+/**
+ * Ensure the oEmbed view mode exists for existing installs.
+ */
+function yudl_oembed_update_9001(): void {
+  yudl_oembed_ensure_oembed_view_mode();
+}
+
+/**
+ * Create oEmbed view displays for existing installs.
+ */
+function yudl_oembed_update_9002(): void {
+  yudl_oembed_ensure_oembed_view_displays();
+}
+
+/**
+ * Create the node oEmbed view mode if it doesn't exist.
+ */
+function yudl_oembed_ensure_oembed_view_mode(): void {
+  $storage = \Drupal::entityTypeManager()->getStorage('entity_view_mode');
+  if ($storage->load('node.oembed')) {
+    return;
+  }
+
+  $view_mode = $storage->create([
+    'id' => 'node.oembed',
+    'label' => 'oEmbed',
+    'targetEntityType' => 'node',
+    'status' => TRUE,
+    'cache' => TRUE,
+  ]);
+  $view_mode->save();
+}
+
+/**
+ * Create oEmbed view displays for all node bundles.
+ */
+function yudl_oembed_ensure_oembed_view_displays(): void {
+  $bundle_info = \Drupal::service('entity_type.bundle.info')->getBundleInfo('node');
+  if (empty($bundle_info)) {
+    return;
+  }
+
+  $storage = \Drupal::entityTypeManager()->getStorage('entity_view_display');
+  foreach (array_keys($bundle_info) as $bundle) {
+    $oembed_id = "node.{$bundle}.oembed";
+    if ($storage->load($oembed_id)) {
+      continue;
+    }
+
+    $display = $storage->create([
+      'id' => $oembed_id,
+      'targetEntityType' => 'node',
+      'bundle' => $bundle,
+      'mode' => 'oembed',
+      'status' => TRUE,
+    ]);
+
+    $default = $storage->load("node.{$bundle}.default");
+    if ($default) {
+      $display->set('content', $default->get('content'));
+      $display->set('hidden', $default->get('hidden'));
+    }
+
+    $display->save();
+  }
+}

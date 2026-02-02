@@ -4,3 +4,14 @@ yudl_oembed.endpoint:
     _controller: '\Drupal\yudl_oembed\Controller\OEmbedController::handle'
   requirements:
     _access: 'TRUE'
+
+yudl_oembed.embed:
+  path: '/embed/{node}'
+  defaults:
+    _controller: '\Drupal\yudl_oembed\Controller\EmbedController::view'
+  requirements:
+    _entity_access: 'node.view'
+  options:
+    parameters:
+      node:
+        type: entity:node

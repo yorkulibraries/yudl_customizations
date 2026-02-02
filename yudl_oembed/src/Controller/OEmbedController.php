@@ -130,7 +130,11 @@ final class OEmbedController extends ControllerBase {
 
   private function jsonResponse(array $payload, int $status): JsonResponse {
     $response = new JsonResponse($payload, $status);
-    $response->headers->set('Content-Type', 'application/json+oembed');
+    $response->headers->set('Content-Type', 'application/json; charset=utf-8');
+    $response->headers->set('Content-Disposition', 'inline; filename="oembed.json"');
+    $response->headers->set('Access-Control-Allow-Origin', '*');
+    $response->headers->set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
     return $response;
   }
 
