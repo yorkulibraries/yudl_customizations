@@ -62,6 +62,7 @@ function yudl_blocks_format_time($time) {
  */
 function yudl_blocks_get_latest_changed_node($entityTypeManager) {
   $query = $entityTypeManager->getStorage('node')->getQuery();
+  $query->accessCheck(TRUE);
   $query->condition('status', 1);
   $query->sort('created', 'DESC');
   $query->range(0, 1);

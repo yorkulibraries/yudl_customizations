@@ -5,4 +5,4 @@ dependencies:
   - islandora:islandora
   - drupal:search_api_solr
 package: YUDL
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10.3 || ^11
