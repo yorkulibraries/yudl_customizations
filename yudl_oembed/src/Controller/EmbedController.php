@@ -30,6 +30,18 @@ final class EmbedController extends ControllerBase {
   public function view(NodeInterface $node): array {
     $view_mode = $this->resolveViewMode($node);
     $build = $this->entityTypeManager->getViewBuilder('node')->view($node, $view_mode);
+    $site_name = (string) $this->config('system.site')->get('name');
+    $title = $node->label();
+    if ($site_name !== '') {
+      $title .= ' | ' . $site_name;
+    }
+    $build['#attached']['html_head'][] = [
+      [
+        '#tag' => 'title',
+        '#value' => $title,
+      ],
+      'yudl_oembed_title',
+    ];
     $this->allowFraming($build);
     return $build;
   }
