@@ -1,0 +1,14 @@
+yudl_map_assets:
+  version: 1.x
+  css:
+    theme:
+      css/yudl-map.css: {}
+  js:
+    js/yudl-map.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - geolocation_leaflet/leaflet
+    - geolocation_leaflet/leaflet.fullscreen
+    - geolocation_leaflet/leaflet.draw
+    - geolocation_leaflet/leaflet.markercluster

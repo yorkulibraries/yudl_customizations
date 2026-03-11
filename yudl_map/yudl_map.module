@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * yudl_map.module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function yudl_map_theme($existing, $type, $theme, $path) {
+  return [
+    'yudl_map' => [
+      'variables' => [],
+      'template' => 'yudl-map',
+      'path' => $path . '/templates',
+    ],
+  ];
+}

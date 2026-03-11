@@ -1,0 +1,16 @@
+# Page for the map.
+yudl_map.page:
+  path: '/explore/map'
+  defaults:
+    _controller: '\Drupal\yudl_map\Controller\MapController::mapPage'
+    _title: 'Explore Map'
+  requirements:
+    _permission: 'access content'
+
+# JSON endpoint for all nodes.
+yudl_map.json:
+  path: '/explore/map/data'
+  defaults:
+    _controller: '\Drupal\yudl_map\Controller\MapController::mapData'
+  requirements:
+    _permission: 'access content'

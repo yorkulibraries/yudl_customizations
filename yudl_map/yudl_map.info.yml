@@ -1,0 +1,8 @@
+name: YUDL Map
+type: module
+description: Provides a Leaflet map with geolocation nodes.
+core_version_requirement: ^10.3 || ^11
+package: YUDL
+dependencies:
+  - geolocation
+  - geolocation_leaflet
