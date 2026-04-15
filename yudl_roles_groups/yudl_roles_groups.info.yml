@@ -1,0 +1,8 @@
+name: 'YUDL Roles to Groups'
+type: module
+description: 'Add users with the yorku role to the York University group.'
+core_version_requirement: ^10.3 || ^11
+package: YUDL
+dependencies:
+  - drupal:user
+  - group:group
