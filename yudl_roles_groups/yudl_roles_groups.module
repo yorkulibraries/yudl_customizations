@@ -18,12 +18,28 @@ function yudl_roles_groups_user_login(UserInterface $account): void {
   // Only act on the very first login.
   // The 'login' field is set AFTER this hook fires for the first time,
   // so a value of 0 means this is the first login.
+  \Drupal::logger('yudl_roles_groups')->debug(
+    'user_login fired for @name. Last login: @login. Roles: @roles.',
+    [
+      '@name' => $account->getAccountName(),
+      '@login' => $account->getLastLoginTime(),
+      '@roles' => implode(', ', $account->getRoles()),
+    ]
+  );
+
   if ($account->getLastLoginTime() !== 0) {
+    \Drupal::logger('yudl_roles_groups')->debug(
+      'Skipping @name — not a first login (last login: @login).',
+      ['@name' => $account->getAccountName(), '@login' => $account->getLastLoginTime()]
+    );
     return;
   }
 
-  // Confirm the user has the 'yorku' role before adding.
   if (!$account->hasRole('yorku')) {
+    \Drupal::logger('yudl_roles_groups')->debug(
+      'Skipping @name — yorku role not present at login time.',
+      ['@name' => $account->getAccountName()]
+    );
     return;
   }
 
