@@ -1,0 +1,27 @@
+yudl_taxonomy_reconcile.root:
+  path: '/api/reconcile'
+  defaults:
+    _controller: '\Drupal\yudl_taxonomy_reconcile\Controller\ReconcileController::root'
+    _title: 'Reconciliation Service'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
+    _auth:
+      - cookie
+      - basic_auth
+  methods: [GET, POST]
+
+yudl_taxonomy_reconcile.endpoint:
+  path: '/api/reconcile/{vocabulary}'
+  defaults:
+    _controller: '\Drupal\yudl_taxonomy_reconcile\Controller\ReconcileController::reconcile'
+    _title: 'Reconciliation Endpoint'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE
+    _auth:
+      - cookie
+      - basic_auth
+  methods: [GET, POST]
