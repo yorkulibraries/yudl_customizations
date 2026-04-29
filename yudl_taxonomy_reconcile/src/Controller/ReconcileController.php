@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\search_api\Entity\Index;
 
 /**
- * Provides a Google Refine reconciliation API for Drupal taxonomy terms.
+ * Provides an OpenRefine reconciliation API for Drupal taxonomy terms.
  *
  * Exposes endpoints at /api/reconcile/{vocabulary} that conform to the
  * Reconciliation Service API specification, allowing OpenRefine and

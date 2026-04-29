@@ -1,5 +1,5 @@
 name: 'YUDL Taxonomy Reconciliation'
-description: 'Google Refine reconciliation API for Drupal taxonomy terms via Search API Solr.'
+description: 'OpenRefine reconciliation API for Drupal taxonomy terms via Search API Solr.'
 type: module
 core_version_requirement: ^10.3 || ^11
 package: YUDL
