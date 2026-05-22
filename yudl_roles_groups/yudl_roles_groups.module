@@ -1,0 +1,88 @@
+<?php
+
+/**
+ * @file
+ * Automatically adds yorku role users into Group 2 on first login.
+ */
+
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\UserInterface;
+
+/**
+ * Implements hook_user_login().
+ *
+ * Note: LDAP sets the login timestamp before this hook fires, so
+ * getLastLoginTime() cannot be used to detect first logins for LDAP users.
+ * Instead, we check for the yorku role and rely on the membership check in
+ * _yudl_roles_groups_add_to_group() to prevent duplicate enrollments on
+ * subsequent logins.
+ */
+function yudl_roles_groups_user_login(UserInterface $account): void {
+  \Drupal::logger('yudl_roles_groups')->debug(
+    'user_login fired for @name. Last login: @login. Roles: @roles.',
+    [
+      '@name' => $account->getAccountName(),
+      '@login' => $account->getLastLoginTime(),
+      '@roles' => implode(', ', $account->getRoles()),
+    ]
+  );
+
+  if (!$account->hasRole('yorku')) {
+    \Drupal::logger('yudl_roles_groups')->debug(
+      'Skipping @name — yorku role not present.',
+      ['@name' => $account->getAccountName()]
+    );
+    return;
+  }
+
+  _yudl_roles_groups_add_to_group($account);
+}
+
+/**
+ * Adds a user to Group 2 as a member.
+ *
+ * @param \Drupal\Core\Session\AccountInterface $account
+ *   The user account to add.
+ */
+function _yudl_roles_groups_add_to_group(AccountInterface $account): void {
+  /** @var \Drupal\group\Entity\Storage\GroupStorageInterface $group_storage */
+  $group_storage = \Drupal::entityTypeManager()->getStorage('group');
+
+  // Load Group 2 by its group ID.
+  $group_id = \Drupal::config('yudl_roles_groups.settings')->get('target_group_id') ?? 2;
+  $group = $group_storage->load($group_id);
+
+  if (!$group) {
+    \Drupal::logger('yudl_roles_groups')->error(
+      'Could not load group with ID @id for auto-add.',
+      ['@id' => $group_id]
+    );
+    return;
+  }
+
+  // Load the full user entity (hook_user_login receives UserInterface already,
+  // but we reload to be safe in case of partial loads).
+  $user = \Drupal::entityTypeManager()
+    ->getStorage('user')
+    ->load($account->id());
+
+  if (!$user) {
+    return;
+  }
+
+  // Check if the user is already a member to avoid duplicate membership errors.
+  if ($group->getMember($user)) {
+    return;
+  }
+
+  $group->addMember($user);
+
+  \Drupal::logger('yudl_roles_groups')->info(
+    'User @uid (@name) was automatically added to group @gid on first login.',
+    [
+      '@uid' => $user->id(),
+      '@name' => $user->getAccountName(),
+      '@gid' => $group->id(),
+    ]
+  );
+}

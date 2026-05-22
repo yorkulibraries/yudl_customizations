@@ -1,0 +1,7 @@
+yudl_roles_groups.settings:
+  type: config_object
+  label: 'YUDL Roles to Group Settings'
+  mapping:
+    target_group_id:
+      type: integer
+      label: 'Target Group ID'
