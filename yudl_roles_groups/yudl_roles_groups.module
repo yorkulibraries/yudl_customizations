@@ -11,13 +11,13 @@ use Drupal\user\UserInterface;
 /**
  * Implements hook_user_login().
  *
- * Fires after LDAP provisioning and role assignment are complete,
- * making this the reliable place to act on first-login group add.
+ * Note: LDAP sets the login timestamp before this hook fires, so
+ * getLastLoginTime() cannot be used to detect first logins for LDAP users.
+ * Instead, we check for the yorku role and rely on the membership check in
+ * _yudl_roles_groups_add_to_group() to prevent duplicate enrollments on
+ * subsequent logins.
  */
 function yudl_roles_groups_user_login(UserInterface $account): void {
-  // Only act on the very first login.
-  // The 'login' field is set AFTER this hook fires for the first time,
-  // so a value of 0 means this is the first login.
   \Drupal::logger('yudl_roles_groups')->debug(
     'user_login fired for @name. Last login: @login. Roles: @roles.',
     [
@@ -27,17 +27,9 @@ function yudl_roles_groups_user_login(UserInterface $account): void {
     ]
   );
 
-  if ($account->getLastLoginTime() !== 0) {
-    \Drupal::logger('yudl_roles_groups')->debug(
-      'Skipping @name — not a first login (last login: @login).',
-      ['@name' => $account->getAccountName(), '@login' => $account->getLastLoginTime()]
-    );
-    return;
-  }
-
   if (!$account->hasRole('yorku')) {
     \Drupal::logger('yudl_roles_groups')->debug(
-      'Skipping @name — yorku role not present at login time.',
+      'Skipping @name — yorku role not present.',
       ['@name' => $account->getAccountName()]
     );
     return;
