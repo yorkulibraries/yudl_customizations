@@ -106,9 +106,11 @@ function yudl_blocks_solr_get_collection_children($collection_node) {
     $solariumQuery->setStart(0)->setRows(20000);
     $nids = $solrConnector->execute($solariumQuery);
     $count = $nids->getNumFound();
-    if ($count) {
-      $result_set['collection_created'] = $nids->getDocuments()[0]->ds_created;
-      $result_set['collection_recently_added'] = $nids->getDocuments()[$count - 1]->ds_created;
+    $documents = $nids->getDocuments();
+    $doc_count = count($documents);
+    if ($doc_count) {
+      $result_set['collection_created'] = $documents[0]->ds_created ?? NULL;
+      $result_set['collection_recently_added'] = $documents[$doc_count - 1]->ds_created ?? NULL;
       $languages_available = array_reduce($nids->getDocuments(), function ($carry, $item) {
         if (isset($item->sm_field_language)) {
           $carry = array_unique(array_merge($carry, array_values($item->sm_field_language)));
