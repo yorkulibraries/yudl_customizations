@@ -1,0 +1,11 @@
+name: "YUDL Regenesis"
+type: module
+description: "Find missing-derivatives and regenerate them."
+package: Custom
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:media
+  - drupal:node
+  - drupal:action
+  - jwt:jwt
+  - key:key
