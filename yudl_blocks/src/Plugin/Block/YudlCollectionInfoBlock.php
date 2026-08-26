@@ -111,13 +111,29 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
   }
 
   /**
+   * Builds the faceted search URL for a given collection.
+   *
+   * @param int $collection_nid
+   *   The collection node ID.
+   *
+   * @return string
+   *   The rendered faceted search URL.
+   */
+  private function buildFacetedSearchUrl($collection_nid) {
+    $base_path = \Drupal::request()->getBasePath();
+    return $base_path . '/solr-search/content?search_api_fulltext=&f[0]=collection:' . (int) $collection_nid;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function build() {
     $total_locations = $total_languages = $islandora_models = $items = 0;
     $stat_box_row1 = $stat_box_row2 = [];
     $collection_node = $this->currentRouteMatch->getParameter('node');
+    $collection_nid = is_object($collection_node) ? $collection_node->id() : $collection_node;
     $children = yudl_blocks_solr_get_collection_children($collection_node);
+
     if (array_key_exists('item_count', $children)) {
       $items = $children['item_count'];
     }
@@ -133,50 +149,51 @@ class YudlCollectionInfoBlock extends BlockBase implements ContainerFactoryPlugi
     if (array_key_exists('collection_languages', $children)) {
       $total_languages = $children['collection_languages'];
     }
-
     if (array_key_exists('collection_locations', $children)) {
       $unique_locations = $children['collection_locations'];
     }
 
+    $facet_search_url = $this->buildFacetedSearchUrl($collection_nid);
+    $icon_link_open = '<a href="' . $facet_search_url . '" target="_blank" rel="noopener noreferrer" aria-label="' . t('View collection in faceted search') . '">';
+    $icon_link_close = '</a>';
+
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Items') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($items - 1) . '</span></div>' .
-                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fa-solid fa-layer-group fs-4"></i></div></div>' .
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle">' . $icon_link_open . '<i class="fa-solid fa-layer-group fs-4"></i>' . $icon_link_close . '</div></div>' .
                         '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Resource Types') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($islandora_models - 1) . '</span></div>' .
-                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-shapes fs-4"></i></div></div>' .
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle">' . $icon_link_open . '<i class="fas fa-shapes fs-4"></i>' . $icon_link_close . '</div></div>' .
                           '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Unique Languages') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($total_languages) . '</span></div>' .
-                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fa-solid fa-language fs-4"></i></div></div>' .
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle">' . $icon_link_open . '<i class="fa-solid fa-language fs-4"></i>' . $icon_link_close . '</div></div>' .
                           '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Collection Created') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($collection_created) ? yudl_blocks_format_time($collection_created) : 'unknown') . '</span></div>' .
-                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-crown fs-4"></i></div></div>' .
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle">' . $icon_link_open . '<i class="fas fa-crown fs-4"></i>' . $icon_link_close . '</div></div>' .
                           '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Most Recent Item Added') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . (($last_change_date) ? yudl_blocks_format_time($last_change_date) : 'unknown') . '</span></div>' .
-                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-clock fs-4"></i></div></div>' .
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle">' . $icon_link_open . '<i class="fas fa-clock fs-4"></i>' . $icon_link_close . '</div></div>' .
                         '</div>');
     $stat_box_row1[] = $this->makeBox('
                         <div class="row">
                           <div class="col"><h3 class="h5 card-title text-uppercase text-muted mb-0">' . t('Unique Locations') . '</h3><span class="h2 text-primary font-weight-bold mb-0">' . number_format($unique_locations) . '</span></div>' .
-                          '<div class="col-auto"><div class="icon icon-shape rounded-circle"><i class="fas fa-globe fs-4"></i></div></div>' .
+                          '<div class="col-auto"><div class="icon icon-shape rounded-circle">' . $icon_link_open . '<i class="fas fa-globe fs-4"></i>' . $icon_link_close . '</div></div>' .
                         '</div>');
 
     return [
       '#markup' =>
       (count($stat_box_row1) > 0) ?
-        // ROW 1.
       '<div class="stats-container"><div class="row row-cols-1 row-cols-md-3 py-2 g-md-3 mb-2">' .
       implode('', $stat_box_row1) .
       '</div>' .
-        // ROW 2.
       '<div class="row">' .
       implode('', $stat_box_row2) .
       '</div>' :
