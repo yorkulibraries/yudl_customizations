@@ -1,0 +1,23 @@
+islandora_repository_reports_css:
+  version: 1.x
+  css:
+    theme:
+      css/islandora_repository_reports.css: {}
+
+islandora_repository_reports_loading_message:
+  version: 1.x
+  js:
+    js/islandora_repository_reports_loading_message.js: {}
+  dependencies:
+    - core/jquery
+    - core/once
+
+islandora_repository_reports_chart:
+  version: 1.x
+  js:
+    https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js: { type: external }
+    js/islandora_repository_reports_chart.js: {}
+  dependencies:
+    - core/jquery
+    - core/once
+    - core/drupalSettings

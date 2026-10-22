@@ -1,0 +1,7 @@
+name: 'Islandora Repository Reports Examples'
+description: "Provides example data source plugins for the Islandora Repository Reports module."
+type: module
+package: Islandora
+core_version_requirement: ^9 || ^10
+dependencies:
+  - islandora_repository_reports

@@ -1,0 +1,25 @@
+services:
+  islandora_repository_reports.utilities:
+    class: Drupal\islandora_repository_reports\Utils
+
+  # Datasource services.
+  islandora_repository_reports.datasource.mimetype:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\MimeType
+  islandora_repository_reports.datasource.media_use:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\MediaUse
+  islandora_repository_reports.datasource.model:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\Model
+  islandora_repository_reports.datasource.genre:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\Genre
+  islandora_repository_reports.datasource.content_type:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\ContentType
+  islandora_repository_reports.datasource.nodes_by_month:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\NodesByMonth
+  islandora_repository_reports.datasource.disk_usage:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\DiskUsage
+  islandora_repository_reports.datasource.disk_usage_by_month:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\DiskUsageByMonth
+  islandora_repository_reports.datasource.collection:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\Collection
+  islandora_repository_reports.datasource.field_value:
+    class: Drupal\islandora_repository_reports\Plugin\DataSource\FieldValue

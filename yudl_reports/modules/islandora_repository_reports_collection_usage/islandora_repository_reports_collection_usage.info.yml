@@ -1,0 +1,8 @@
+name: 'Islandora Repository Reports Collection Usage'
+description: "Provides a report on colleciton usage using the Islandora Repository Reports module."
+type: module
+package: Islandora
+core_version_requirement: ^9 || ^10
+dependencies:
+  - islandora_repository_reports
+  - 'islandora_matomo:islandora_matomo'

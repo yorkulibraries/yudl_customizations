@@ -1,0 +1,7 @@
+name: 'Islandora Repository Reports ActiveMQ'
+description: "Provides a plugin for the Islandora Repository Reports module that shows number of pending messages for ActiveMQ queues."
+type: module
+package: Islandora
+core_version_requirement: ^9 || ^10
+dependencies:
+  - islandora_repository_reports
