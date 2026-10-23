@@ -24,3 +24,15 @@ function yudl_search_help($route_name, RouteMatchInterface $route_match) {
     default:
   }
 }
+
+/**
+ * Implements hook_library_info_alter().
+ */
+function yudl_search_library_info_alter(&$libraries, $extension) {
+  // jquery-ui-slider-pips needs jQuery.type(), which jQuery 4 removed.
+  if ($extension === 'facets_range_widget') {
+    foreach ($libraries as &$library) {
+      $library['dependencies'][] = 'yudl_search/jquery_type_shim';
+    }
+  }
+}

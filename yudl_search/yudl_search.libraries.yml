@@ -1,0 +1,6 @@
+jquery_type_shim:
+  version: 1.0
+  js:
+    js/jquery-type-shim.js: { weight: -20 }
+  dependencies:
+    - core/jquery
