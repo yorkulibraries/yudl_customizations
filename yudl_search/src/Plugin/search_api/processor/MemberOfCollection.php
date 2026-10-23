@@ -6,19 +6,43 @@ use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Processor\ProcessorPluginBase;
 
 /**
- * Exclude non-collection nodes referenced by field_member_of.
+ * Index field_member_of as the nearest collection(s) a node belongs to.
+ *
+ * Parents that aren't collections (e.g. a newspaper issue a page belongs to)
+ * are replaced by their nearest collection ancestors, so nested items are
+ * indexed as members of their collection.
  * Cribbed from https://github.com/catalyst/cca_search
  *
  * @SearchApiProcessor(
  *   id = "member_of_collection",
  *   label = @Translation("Member of collection"),
- *   description = @Translation("Only index field_member_of values when referenced node is collection"),
+ *   description = @Translation("Index field_member_of values as the nearest collection ancestors of the node"),
  *   stages = {
  *     "alter_items" = 0,
  *   },
  * )
  */
 class MemberOfCollection extends ProcessorPluginBase {
+
+  /**
+   * Model URIs that count as a collection.
+   */
+  const COLLECTION_MODEL_URIS = [
+    'http://purl.org/dc/dcmitype/Collection',
+    'https://schema.org/Newspaper',
+  ];
+
+  /**
+   * Maximum number of levels to walk up looking for a collection.
+   */
+  const MAX_DEPTH = 10;
+
+  /**
+   * Cache of nid => [is_collection, parent nids], shared across batches.
+   *
+   * @var array
+   */
+  protected static $nodeInfo = [];
 
   /**
    * {@inheritdoc}
@@ -42,42 +66,86 @@ class MemberOfCollection extends ProcessorPluginBase {
       $object = $item->getOriginalObject();
       $node = $object->getValue();
       if ($node->hasField('field_member_of') && !$node->field_member_of->isEmpty()) {
-        $parents = $object->get('field_member_of')->getValue();
-        $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-        $taxonomy_term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
-
-        if (isset($parents)) {
-          // Why does referencedEntities() return empty when $parent has target_ids?
-          // $entities = $node->get('field_member_of')->referencedEntities();
-          $collections = [];
-          foreach ($parents as $delta => $parent) {
-            // Load parent node.
-            $parent_node = $node_storage->load($parent['target_id']);
-            // Is parent a Collection?
-            if (is_object($parent_node)) {
-              $model_value = $parent_node->get('field_model')
-                ->first();
-              if (isset($model_value)) {
-                $model_tid = $model_value->getValue()['target_id'];
-              }
-              if (isset($model_tid)) {
-                $model_term = $taxonomy_term_storage->load($model_tid);
-              }
-              if (isset($model_term) && is_object($model_term)) {
-                $model_term_uri = $model_term->get('field_external_uri')->first()->getUrl()->getUri();
-                if ($model_term_uri == 'http://purl.org/dc/dcmitype/Collection' || $model_term_uri == 'https://schema.org/Newspaper') {
-                  $collections[] = $parent_node->id();
-                }
-              }
-            }
-          }
-          // Modify node with allowed member_of values, perhaps [].
-          $node->set('field_member_of', $collections);
-          // Replace original object with modified $node value.
-          $object->setValue($node);
-          $items[$item_id]->setOriginalObject($object);
-        }
+        $parents = array_column($node->get('field_member_of')->getValue(), 'target_id');
+        // Modify node with nearest collection ancestors, perhaps [].
+        $node->set('field_member_of', $this->findCollections($parents));
+        // Replace original object with modified $node value.
+        $object->setValue($node);
+        $items[$item_id]->setOriginalObject($object);
       }
     }
   }
+
+  /**
+   * Walks up field_member_of from the given parents to the nearest collections.
+   *
+   * A collection parent is kept as is; a non-collection parent is replaced by
+   * its own nearest collection ancestors.
+   *
+   * @param array $parents
+   *   Parent node ids.
+   *
+   * @return array
+   *   Node ids of the nearest collection ancestors.
+   */
+  protected function findCollections(array $parents) {
+    $collections = [];
+    $visited = [];
+    $level = $parents;
+    for ($depth = 0; $level && $depth < static::MAX_DEPTH; $depth++) {
+      $next = [];
+      foreach ($level as $nid) {
+        if (isset($visited[$nid])) {
+          continue;
+        }
+        $visited[$nid] = TRUE;
+        $info = $this->getNodeInfo($nid);
+        if ($info === NULL) {
+          continue;
+        }
+        if ($info['is_collection']) {
+          $collections[$nid] = $nid;
+        }
+        else {
+          $next = array_merge($next, $info['parents']);
+        }
+      }
+      $level = $next;
+    }
+    return array_values($collections);
+  }
+
+  /**
+   * Gets whether a node is a collection, and its parents.
+   *
+   * @param int|string $nid
+   *   Node id.
+   *
+   * @return array|null
+   *   Array with 'is_collection' and 'parents' keys, or NULL if the node
+   *   doesn't exist.
+   */
+  protected function getNodeInfo($nid) {
+    if (array_key_exists($nid, static::$nodeInfo)) {
+      return static::$nodeInfo[$nid];
+    }
+    $info = NULL;
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+    if (is_object($node)) {
+      $info = [
+        'is_collection' => FALSE,
+        'parents' => [],
+      ];
+      if ($node->hasField('field_model') && ($model_term = $node->get('field_model')->entity)) {
+        $uri = $model_term->get('field_external_uri')->first();
+        $info['is_collection'] = $uri && in_array($uri->getUrl()->getUri(), static::COLLECTION_MODEL_URIS);
+      }
+      if ($node->hasField('field_member_of')) {
+        $info['parents'] = array_column($node->get('field_member_of')->getValue(), 'target_id');
+      }
+    }
+    static::$nodeInfo[$nid] = $info;
+    return $info;
+  }
+
 }
